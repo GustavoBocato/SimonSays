@@ -5,6 +5,7 @@ int main(int argc, char **argv) {
     abcg::Application app(argc, argv);
 
     Window window;
+    window.setOpenGLSettings({.samples = 2, .doubleBuffering = false});
     window.setWindowSettings(
         {.width = 600, .height = 600, .title = "Simon Says"});
 
