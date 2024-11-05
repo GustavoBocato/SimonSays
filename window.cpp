@@ -1,5 +1,7 @@
 #include "window.hpp"
 #include <iostream>
+#include <iterator>
+
 void Window::onCreate() {
     auto const path{abcg::Application::getAssetsPath()};
     m_program =
@@ -11,52 +13,55 @@ void Window::onCreate() {
     abcg::glClear(GL_COLOR_BUFFER_BIT);
     auto const seed{std::chrono::steady_clock::now().time_since_epoch().count()};
     m_randomEngine.seed(seed);
+
+    int i = 0;
+    m_colorSequence.reserve(m_totalTurns);
+
+    while (i < m_totalTurns){
+        std::uniform_int_distribution<int> distribuicao(0, 1000);
+        int numero = distribuicao(m_randomEngine) % 4;
+        switch (numero) {
+            case 0:
+                m_colorSequence.push_back("red");
+                break;
+            case 1:
+                m_colorSequence.push_back("green");
+                break;
+            case 2:
+                m_colorSequence.push_back("blue");
+                break;
+            default:
+                m_colorSequence.push_back("yellow");
+        }
+        i++;
+    }
 }
 
 void Window::onPaint() {
-    // Check whether to render the next triangle
-    if (m_isPlayerTurn) {
-        std::cout << "HAHAHAHAAH" << std::endl;
-        m_isPlayerTurn = false;
-    }
-
     int const sides = 180;
-
-    std::uniform_int_distribution<int> distribuicao(0, 1000);
-    int numero = distribuicao(m_randomEngine) % 4;
 
     if (m_timer.elapsed() < m_colorAtualizationRate)
       return;
-    m_isPlayerTurn = true;
     m_timer.restart();
 
-    switch (numero) {
-        case 0:
-            setupModel(sides, m_CRed, m_Green, m_Blue, m_Yellow);
-            m_colorSequence.push_back("red");
-            break;
-        case 1:
-            setupModel(sides, m_Red, m_CGreen, m_Blue, m_Yellow);
-            m_colorSequence.push_back("green");
-            break;
-        case 2:
-            setupModel(sides, m_Red, m_Green, m_CBlue, m_Yellow);
-            m_colorSequence.push_back("blue");
-            break;
-        default:
-            setupModel(sides, m_Red, m_Green, m_Blue, m_CYellow);
-            m_colorSequence.push_back("yellow");
+    if (m_colorSequence[m_showIndex] == "red"){
+            setupModel(sides, m_Red, m_CGreen, m_CBlue, m_CYellow);
+    } else if (m_colorSequence[m_showIndex] == "green"){
+            setupModel(sides, m_CRed, m_Green, m_CBlue, m_CYellow);
+    } else if (m_colorSequence[m_showIndex] == "blue") {
+            setupModel(sides, m_CRed, m_CGreen, m_Blue, m_CYellow);
+    } else {
+            setupModel(sides, m_CRed, m_CGreen, m_CBlue, m_Yellow);
     }
+    m_showIndex++;
 
-    std::cout << "NUMERO DE CORES AGORA: " << m_colorSequence.size() + 1
-            << std::endl;
+
     abcg::glViewport(0, 0, m_viewportSize.x, m_viewportSize.y);
 
     abcg::glUseProgram(m_program);
     abcg::glBindVertexArray(m_vao);
 
     abcg::glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
-
     abcg::glBindVertexArray(0);
     abcg::glUseProgram(0);
 }

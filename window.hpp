@@ -28,10 +28,16 @@ private:
     GLuint m_vboVertices{};
     GLuint m_vboColors{};
     GLuint m_program{};
+
     abcg::Timer m_timer;
     abcg::Timer m_turnTimer;
-    float const m_colorAtualizationRate = 1.0/4;
+    int m_turnCount = 1;
+    int m_totalTurns = 50;
+    int m_showIndex = 0;
+
+    float const m_colorAtualizationRate = 1.0/2;
     std::default_random_engine m_randomEngine;
+
 
     // variaveis que a classe tem
     // vamos pensar melhor nelas, juntos
@@ -44,18 +50,22 @@ private:
 
     // definindo cores padrao
     inline static const glm::vec4 m_Red{1.00f, 0.00f, 0.00f, 1.00f};
-    inline static const glm::vec4 m_CRed{1.00f, 0.40f, 0.40f, 1.00f};
-    inline static const glm::vec4 m_Green{0.00f, 1.00f, 0.00f, 1.00f};
-    inline static const glm::vec4 m_CGreen{0.4f, 1.00f, 0.40f, 1.00f};
+    inline static const glm::vec4 m_CRed{0.60f, 0.00f, 0.00f, 1.00f};
+
+    inline static const glm::vec4 m_Green{0.00f, 1.00f, 0.27f, 1.00f};
+    inline static const glm::vec4 m_CGreen{0.00f, 0.60f, 0.27f, 1.00f};
+    
     inline static const glm::vec4 m_Blue{0.00f, 0.00f, 1.00f, 1.00f};
-    inline static const glm::vec4 m_CBlue{0.40f, 0.40f, 1.00f, 1.00f};
+    inline static const glm::vec4 m_CBlue{0.00f, 0.00f, 0.60f, 1.00f};
+    
     inline static const glm::vec4 m_Yellow{1.00f, 1.00f, 0.00f, 1.00f};
-    inline static const glm::vec4 m_CYellow{1.00f, 1.00f, 0.45f, 1.00f};
+    inline static const glm::vec4 m_CYellow{0.60f, 0.60f, 0.00f, 1.00f};
+
     inline static const glm::vec4 m_Black{0.00f, 0.00f, 0.00f, 1.00f};
 
     // cria um array de cores, inicialmente vazio (cabe 50 cores)
     // vamos preencher aleatoriamente com cores, ao inicio do jogo
-    std::vector<std::string> m_colorSequence{};
+    std::vector<std::string> m_colorSequence;
     void setupModel(int sides, glm::vec4 red, glm::vec4 green, glm::vec4 blue,
                     glm::vec4 yellow);
 };
