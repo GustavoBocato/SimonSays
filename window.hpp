@@ -10,6 +10,7 @@ protected:
     // metodos implementados em window.cpp
     void onCreate() override;
     void onPaint() override;
+    void onUpdate() override;
     void onPaintUI() override;
     void onResize(glm::ivec2 const &size) override;
     void onDestroy() override;
@@ -34,6 +35,7 @@ private:
     int m_turnCount = 1;
     int m_totalTurns = 50;
     int m_showIndex = 0;
+    int const m_sides = 180;
 
     float const m_colorAtualizationRate = 1.0/2;
     std::default_random_engine m_randomEngine;
@@ -52,8 +54,8 @@ private:
     inline static const glm::vec4 m_Red{1.00f, 0.00f, 0.00f, 1.00f};
     inline static const glm::vec4 m_CRed{0.60f, 0.00f, 0.00f, 1.00f};
 
-    inline static const glm::vec4 m_Green{0.00f, 1.00f, 0.27f, 1.00f};
-    inline static const glm::vec4 m_CGreen{0.00f, 0.60f, 0.27f, 1.00f};
+    inline static const glm::vec4 m_Green{0.00f, 0.85f, 0.22f, 1.00f};
+    inline static const glm::vec4 m_CGreen{0.00f, 0.50f, 0.22f, 1.00f};
     
     inline static const glm::vec4 m_Blue{0.00f, 0.00f, 1.00f, 1.00f};
     inline static const glm::vec4 m_CBlue{0.00f, 0.00f, 0.60f, 1.00f};
@@ -66,8 +68,9 @@ private:
     // cria um array de cores, inicialmente vazio (cabe 50 cores)
     // vamos preencher aleatoriamente com cores, ao inicio do jogo
     std::vector<std::string> m_colorSequence;
-    void setupModel(int sides, glm::vec4 red, glm::vec4 green, glm::vec4 blue,
+    void setupModel(int sides, float radius ,glm::vec4 red, glm::vec4 green, glm::vec4 blue,
                     glm::vec4 yellow);
+    void playerTurn();
 };
 
 #endif

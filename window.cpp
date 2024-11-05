@@ -1,6 +1,7 @@
 #include "window.hpp"
 #include <iostream>
 #include <iterator>
+#include <ostream>
 
 void Window::onCreate() {
     auto const path{abcg::Application::getAssetsPath()};
@@ -37,36 +38,54 @@ void Window::onCreate() {
     }
 }
 
-void Window::onPaint() {
-    int const sides = 180;
+// chamada toda vez antes de onpaint pela ABCg
+void Window::onUpdate(){
 
     if (m_timer.elapsed() < m_colorAtualizationRate)
       return;
     m_timer.restart();
 
     if (m_colorSequence[m_showIndex] == "red"){
-            setupModel(sides, m_Red, m_CGreen, m_CBlue, m_CYellow);
+            setupModel(m_sides, 1.0, m_Red, m_CGreen, m_CBlue, m_CYellow);
     } else if (m_colorSequence[m_showIndex] == "green"){
-            setupModel(sides, m_CRed, m_Green, m_CBlue, m_CYellow);
+            setupModel(m_sides,1.0, m_CRed, m_Green, m_CBlue, m_CYellow);
     } else if (m_colorSequence[m_showIndex] == "blue") {
-            setupModel(sides, m_CRed, m_CGreen, m_Blue, m_CYellow);
+            setupModel(m_sides,1.0, m_CRed, m_CGreen, m_Blue, m_CYellow);
     } else {
-            setupModel(sides, m_CRed, m_CGreen, m_CBlue, m_Yellow);
+            setupModel(m_sides,1.0, m_CRed, m_CGreen, m_CBlue, m_Yellow);
+    }
+    if (m_turnTimer.elapsed() >= m_turnCount * m_colorAtualizationRate){
+        playerTurn();
+        m_turnCount ++;
+        std::cout << "turno: " << m_turnCount << std::endl;
+        m_turnTimer.restart();
     }
     m_showIndex++;
+}
 
+void Window::playerTurn(){
+    std::cout << " da pra fazer o turno assim" << std::endl;
+}
 
+void Window::onPaint() {
     abcg::glViewport(0, 0, m_viewportSize.x, m_viewportSize.y);
 
     abcg::glUseProgram(m_program);
     abcg::glBindVertexArray(m_vao);
 
-    abcg::glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
+    // desenha as cores
+    abcg::glDrawArrays(GL_TRIANGLE_FAN, 0, m_sides + 2);
+    
+    // desenha circulo preto no meio
+    setupModel(m_sides, 0.43,m_Black, m_Black, m_Black, m_Black); 
+    abcg::glBindVertexArray(m_vao);
+    abcg::glDrawArrays(GL_TRIANGLE_FAN, 0, m_sides + 2);
+
     abcg::glBindVertexArray(0);
     abcg::glUseProgram(0);
 }
 
-void Window::setupModel(int sides, glm::vec4 red, glm::vec4 green,
+void Window::setupModel(int sides,float radius, glm::vec4 red, glm::vec4 green,
                         glm::vec4 blue, glm::vec4 yellow) {
 
     // Generate a new VBO and get the associated ID
@@ -77,7 +96,7 @@ void Window::setupModel(int sides, glm::vec4 red, glm::vec4 green,
     std::vector<glm::vec2> positions{{0, 0}};
     auto const step{M_PI * 2 / sides};
     for (auto const angle : iter::range(0.0, M_PI * 2, step)) {
-        positions.emplace_back(std::cos(angle), std::sin(angle));
+        positions.emplace_back(radius * std::cos(angle), radius * std::sin(angle));
     }
     positions.push_back(positions.at(1));
 
