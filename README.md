@@ -19,17 +19,25 @@ A nossa janela personalizada da aplicação altera sobrescreve seguintes as fun�
 
 - onCreate()
 - onPaint()
-- onPaintUI()
 - onUpdate()
 - onResize()
 - onDestroy()
+- onEvent()
 
 Também inclui nossas próprias funções:
 
-- setupModel()
 - playerTurn()
+- setupModel()
 
-A função onCreate() é chamada ao se inicializar a janela, ela foi sobrescrita de forma a configurar os shaders para renderização, definir a cor de fundo, inicializar o gerador de números aleatórios e gerar uma sequência de cores aleatórias em um vetor.   
+A função onCreate() é chamada ao se inicializar a janela, ela foi sobrescrita de forma a configurar os shaders para renderização, definir a cor de fundo, inicializar o gerador de números aleatórios e gerar uma sequência de cores aleatórias em um vetor.
+
+A função onPaint() é chamada uma vez a cada quadro, esse função chama a setupModel() que é responsavel por desenhar circulos com quatro quadrantes de cores que são passadas como argumentos de suas chamadas. Antes dessa função ser chamada a função onUpdate() é chamada também, que por sua vez é responsável pelas animações dos botões piscando.
+
+A função setupModel() pode criar tanto o círculo de quadrantes coloridos, como o círculo preto no meio do círculo colorido (que é desenhado para que o formato do círculo colorido do fundo fique mais parecido com o jogo real).
+
+A animação de piscar dos botões é feita ao se chamar a função setupModel() com argumentos diferentes para o cículo colorido, ou melhor passando-se cores mais claras para os botões que piscam.
+
+A função onEvent() lida com o input do jogador pelo mouse.
 
 ## Tecnologias Utilizadas
 
