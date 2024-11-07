@@ -1,4 +1,7 @@
 #include "window.hpp"
+#include "core.h"
+#include <SDL_events.h>
+#include <SDL_mouse.h>
 #include <iostream>
 #include <iterator>
 #include <ostream>
@@ -15,9 +18,11 @@ void Window::onCreate() {
     auto const seed{std::chrono::steady_clock::now().time_since_epoch().count()};
     m_randomEngine.seed(seed);
 
+    m_gameState = GameState::Running;
     int i = 0;
     m_colorSequence.reserve(m_totalTurns);
 
+    m_turnTimer.restart();
     while (i < m_totalTurns){
         std::uniform_int_distribution<int> distribuicao(0, 1000);
         int numero = distribuicao(m_randomEngine) % 4;
@@ -41,30 +46,86 @@ void Window::onCreate() {
 // chamada toda vez antes de onpaint pela ABCg
 void Window::onUpdate(){
 
-    if (m_timer.elapsed() < m_colorAtualizationRate)
-      return;
-    m_timer.restart();
-
-    if (m_colorSequence[m_showIndex] == "red"){
-            setupModel(m_sides, 1.0, m_Red, m_CGreen, m_CBlue, m_CYellow);
-    } else if (m_colorSequence[m_showIndex] == "green"){
-            setupModel(m_sides,1.0, m_CRed, m_Green, m_CBlue, m_CYellow);
-    } else if (m_colorSequence[m_showIndex] == "blue") {
-            setupModel(m_sides,1.0, m_CRed, m_CGreen, m_Blue, m_CYellow);
+    if (m_gameState == GameState::Stoped){
+        setupModel(m_sides, 1.0,m_CRed, m_CGreen, m_CBlue, m_CYellow); 
     } else {
+        if (m_timer.elapsed() < m_colorAtualizationRate)
+          return;
+
+        m_timer.restart();
+
+        std::vector<int> gameChoices;
+        
+      if (m_turnTimer.elapsed() >= m_turnCount * m_colorAtualizationRate){
+            fmt::print("entrou no turno do player\n");
+            playerTurn(gameChoices, m_turnCount);
+            m_turnCount ++;
+            m_showIndex = 0;
+            m_turnTimer.restart();
+        }
+        
+        if (m_colorSequence[m_showIndex] == "red"){
+            gameChoices.push_back(1);
+            fmt::print("push 1\n");
+            setupModel(m_sides, 1.0, m_Red, m_CGreen, m_CBlue, m_CYellow);
+        } else if (m_colorSequence[m_showIndex] == "green") {
+            gameChoices.push_back(2);
+            fmt::print("push 2\n");
+            setupModel(m_sides,1.0, m_CRed, m_Green, m_CBlue, m_CYellow);
+        } else if (m_colorSequence[m_showIndex] == "blue") {
+            gameChoices.push_back(3);
+            fmt::print("push 3\n");
+            setupModel(m_sides,1.0, m_CRed, m_CGreen, m_Blue, m_CYellow);
+        } else {
+            gameChoices.push_back(4);
+            fmt::print("push 4\n");
             setupModel(m_sides,1.0, m_CRed, m_CGreen, m_CBlue, m_Yellow);
+        }
+        m_showIndex++;
+
+
+      if(m_turnCount > m_totalTurns) {
+            endGame(EndCondition::Win);
+        }
     }
-    if (m_turnTimer.elapsed() >= m_turnCount * m_colorAtualizationRate){
-        playerTurn();
-        m_turnCount ++;
-        std::cout << "turno: " << m_turnCount << std::endl;
-        m_turnTimer.restart();
-    }
-    m_showIndex++;
 }
 
-void Window::playerTurn(){
-    std::cout << " da pra fazer o turno assim" << std::endl;
+void Window::onEvent(SDL_Event const &event){
+
+    glm::ivec2 mousePosition;
+    SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+    fmt::print("({}, {})\n", mousePosition.x, mousePosition.y);
+}
+
+void Window::playerTurn(std::vector<int> &gameChoices, int turnCount){
+
+    m_playerChoice = -1;
+    m_playerChooseTimer.restart();
+    m_gameState = GameState::Stoped;
+
+    for (int t = 0 ; t < turnCount; t++) {
+        //if (m_playerChooseTimer.elapsed() >= 2.0)
+        //    endGame(EndCondition::Lose);
+
+        if (m_playerChoice != gameChoices[t])
+        {
+            endGame(EndCondition::Lose);
+        }
+        m_playerChoice = -1;
+    }
+
+}
+
+void Window::endGame(EndCondition condition){
+    if (condition == EndCondition::Lose) {
+        endText = "YOU LOSE";
+    } else {
+        endText = "YOU WIN";
+    }
+
+    m_turnCount = 1;
+    m_gameState = GameState::Stoped;
+
 }
 
 void Window::onPaint() {
@@ -72,7 +133,7 @@ void Window::onPaint() {
 
     abcg::glUseProgram(m_program);
     abcg::glBindVertexArray(m_vao);
-
+    
     // desenha as cores
     abcg::glDrawArrays(GL_TRIANGLE_FAN, 0, m_sides + 2);
     

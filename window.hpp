@@ -1,7 +1,7 @@
 #ifndef WINDOW_HPP_
 #define WINDOW_HPP_
 #include "abcgOpenGL.hpp"
-#include <array>
+#include <SDL_events.h>
 #include <random>
 #include <string>
 
@@ -13,6 +13,7 @@ protected:
     void onUpdate() override;
     void onPaintUI() override;
     void onResize(glm::ivec2 const &size) override;
+    void onEvent(SDL_Event const &event) override;
     void onDestroy() override;
 
 private:
@@ -32,23 +33,26 @@ private:
 
     abcg::Timer m_timer;
     abcg::Timer m_turnTimer;
+    abcg::Timer m_playerChooseTimer;
+
     int m_turnCount = 1;
     int m_totalTurns = 50;
     int m_showIndex = 0;
     int const m_sides = 180;
 
-    float const m_colorAtualizationRate = 1.0/2;
+    float const m_colorAtualizationRate = 1.0/1;
     std::default_random_engine m_randomEngine;
 
 
-    // variaveis que a classe tem
-    // vamos pensar melhor nelas, juntos
-
-    enum class GameState { Play, Running, GameOver };
+    enum class EndCondition { Win, Lose };
+    enum class GameState { Running, Stoped };
     GameState m_gameState; // guarda em qual estado o jogo esta
 
+    std::string endText;
     // vira true quando player tem que dar input
     bool m_isPlayerTurn{true};
+    int m_playerChoice = -1;
+
 
     // definindo cores padrao
     inline static const glm::vec4 m_Red{1.00f, 0.00f, 0.00f, 1.00f};
@@ -70,7 +74,9 @@ private:
     std::vector<std::string> m_colorSequence;
     void setupModel(int sides, float radius ,glm::vec4 red, glm::vec4 green, glm::vec4 blue,
                     glm::vec4 yellow);
-    void playerTurn();
+    void playerTurn(std::vector<int> &gameChoices, int turnCount);
+    int findQuadrant();
+    void endGame(EndCondition condition);
 };
 
 #endif
