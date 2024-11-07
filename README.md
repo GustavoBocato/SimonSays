@@ -28,6 +28,7 @@ Também inclui nossas próprias funções:
 
 - playerTurn()
 - setupModel()
+- endGame()
 
 A função onCreate() é chamada ao se inicializar a janela, ela foi sobrescrita de forma a configurar os shaders para renderização, definir a cor de fundo, inicializar o gerador de números aleatórios e gerar uma sequência de cores aleatórias em um vetor.
 
@@ -38,6 +39,8 @@ A função setupModel() pode criar tanto o círculo de quadrantes coloridos, com
 A animação de piscar dos botões é feita ao se chamar a função setupModel() com argumentos diferentes para o cículo colorido, ou melhor passando-se cores mais claras para os botões que piscam.
 
 A função onEvent() lida com o input do jogador pelo mouse.
+
+O input do jogador é comparado com as entradas do vetor que armazena a sequência aleatória de cores, na função playerTurn(). Que por sua vez chama a função endGame() passando em seu argumento um valor que indica se o jogador foi vencedor ou não, encerrando o jogo com uma mensagem apropriada.
 
 ## Tecnologias Utilizadas
 
