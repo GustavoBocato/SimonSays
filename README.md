@@ -30,7 +30,7 @@ Também inclui nossas próprias funções:
 - setupModel()
 - endGame()
 
-A função onCreate() é chamada ao se inicializar a janela, ela foi sobrescrita de forma a configurar os shaders para renderização, definir a cor de fundo, inicializar o gerador de números aleatórios e gerar uma sequência de cores aleatórias em um vetor.
+A função onCreate() é chamada ao se inicializar a janela, ela foi sobrescrita de forma a configurar os shaders para renderização, definir a cor de fundo, inicializar o gerador de números aleatórios, gerar uma sequência de cores aleatórias em um vetor (a partir de um inteiro de 0 a 3 gerado aleatoriamente, sendo cada uma das quatro cores dos botões representadas por um desses quatro inteiros).
 
 A função onPaint() é chamada uma vez a cada quadro, esse função chama a setupModel() que é responsavel por desenhar circulos com quatro quadrantes de cores que são passadas como argumentos de suas chamadas. Antes dessa função ser chamada a função onUpdate() é chamada também, que por sua vez é responsável pelas animações dos botões piscando.
 
