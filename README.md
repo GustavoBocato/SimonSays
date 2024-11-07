@@ -13,7 +13,7 @@ Neste jogo, o jogador precisa observar e memorizar uma sequência de cores que s
 - Aumento automático de dificuldade com o avanço das rodadas. (*)
 - Verificação de sequências corretas para dar feedback ao jogador. (*)
 
-(*): Algumas funcionalidades ainda não estão prontas.
+(*): Essas funcionalidades ainda não estão prontas.
 
 ## Detalhes do código
 
@@ -34,9 +34,9 @@ Também inclui nossas próprias funções:
 
 A função onCreate() é chamada ao se inicializar a janela, ela foi sobrescrita de forma a configurar os shaders para renderização, definir a cor de fundo, inicializar o gerador de números aleatórios, gerar uma sequência de cores aleatórias em um vetor (a partir de um inteiro de 0 a 3 gerado aleatoriamente, sendo cada uma das quatro cores dos botões representadas por um desses quatro inteiros) chamado de m_colorSequence.
 
-A função onPaint() é chamada uma vez a cada quadro, esse função chama a setupModel() que é responsavel por desenhar círculos com quatro quadrantes de cores que são passadas como argumentos de suas chamadas. Antes dessa função ser chamada a função onUpdate() é chamada também, que por sua vez é responsável pelas animações dos botões piscando.
+A função onPaint() é chamada a cada quadro, sendo ela responsável por pintar os círculos que são desenhados a partir de um Vertex Array Object (VAO) (que é um um array que tem acesso a coordenadas e cores de uma sequência de pontos) armazenado na variável global chamada de m_vao. Essa função chama a função glDrawArrays() que desenha triangulos conectando dois a dois os pontos da circumfêrencia do círculo com o ponto central do círculo, esses triangulos ficam com a base apontando para fora do círculo e são coloridos a partir das cores associadas aos pontos da circumferência.
 
-A função setupModel() pode criar tanto o círculo de quadrantes coloridos, como o círculo preto no meio do círculo colorido (que é desenhado para que o formato do círculo colorido do fundo fique mais parecido com o jogo real).
+A função responsável por criar esse VAO usado em onPaint() é o setupModel(), que cria essa sequência de 182 coordenadas e 182 cores, as coordenadas são os pontos da circumferencia do círculo e as cores são designadas as coordenadas a partir do quadrante em que a coordenada se encontra que é determinado pelo angulo da coordena no círculo (por exemplo se o angulo for entre 0 e π/2 então a coordenada está no primeiro quadrante).  
 
 A animação de piscar dos botões é feita ao se chamar a função setupModel() com argumentos diferentes para o cículo colorido, ou melhor passando-se cores mais claras para os botões que piscam. A sequência de botões que piscam é definida pela sequência de cores armazenadas no vetor m_colorSequence.
 
