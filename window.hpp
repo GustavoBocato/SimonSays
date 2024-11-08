@@ -13,7 +13,7 @@ protected:
     void onUpdate() override;
     void onPaintUI() override;
     void onResize(glm::ivec2 const &size) override;
-    void onEvent(SDL_Event const &event) override;
+    //void onEvent(SDL_Event const &event) override;
     void onDestroy() override;
 
 private:
@@ -43,7 +43,7 @@ private:
     float const m_colorAtualizationRate = 1.0/1;
     std::default_random_engine m_randomEngine;
 
-
+    
     enum class EndCondition { Win, Lose };
     enum class GameState { Running, Stoped };
     GameState m_gameState; // guarda em qual estado o jogo esta
@@ -75,8 +75,10 @@ private:
     void setupModel(int sides, float radius ,glm::vec4 red, glm::vec4 green, glm::vec4 blue,
                     glm::vec4 yellow);
     void playerTurn(std::vector<int> &gameChoices, int turnCount);
-    int findQuadrant();
+    int findQuadrant(glm::ivec2 mousePosition);
     void endGame(EndCondition condition);
+
+    std::string m_buttonText = "Start";
 };
 
 #endif

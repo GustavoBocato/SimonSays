@@ -2,9 +2,6 @@
 #include "core.h"
 #include <SDL_events.h>
 #include <SDL_mouse.h>
-#include <iostream>
-#include <iterator>
-#include <ostream>
 
 void Window::onCreate() {
     auto const path{abcg::Application::getAssetsPath()};
@@ -42,8 +39,6 @@ void Window::onCreate() {
         i++;
     }
 }
-
-// chamada toda vez antes de onpaint pela ABCg
 void Window::onUpdate(){
 
     if (m_gameState == GameState::Stoped){
@@ -90,29 +85,29 @@ void Window::onUpdate(){
     }
 }
 
-void Window::onEvent(SDL_Event const &event){
-
-    glm::ivec2 mousePosition;
-    SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
-    fmt::print("({}, {})\n", mousePosition.x, mousePosition.y);
-}
+//void Window::onEvent(SDL_Event const &event){
+//
+//    glm::ivec2 mousePosition;
+//    SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+//    fmt::print("({}, {})\n", mousePosition.x, mousePosition.y);
+//}
 
 void Window::playerTurn(std::vector<int> &gameChoices, int turnCount){
 
-    m_playerChoice = -1;
-    m_playerChooseTimer.restart();
-    m_gameState = GameState::Stoped;
+   // m_playerChoice = -1;
+   // m_playerChooseTimer.restart();
+   // m_gameState = GameState::Stoped;
 
-    for (int t = 0 ; t < turnCount; t++) {
-        //if (m_playerChooseTimer.elapsed() >= 2.0)
-        //    endGame(EndCondition::Lose);
+   // for (int t = 0 ; t < turnCount; t++) {
+   //     //if (m_playerChooseTimer.elapsed() >= 2.0)
+   //     //    endGame(EndCondition::Lose);
 
-        if (m_playerChoice != gameChoices[t])
-        {
-            endGame(EndCondition::Lose);
-        }
-        m_playerChoice = -1;
-    }
+   //     if (m_playerChoice != gameChoices[t])
+   //     {
+   //         endGame(EndCondition::Lose);
+   //     }
+   //     m_playerChoice = -1;
+   // }
 
 }
 
@@ -127,7 +122,7 @@ void Window::endGame(EndCondition condition){
     m_gameState = GameState::Stoped;
 
 }
-
+// chamada toda vez antes de onpaint pela ABCg
 void Window::onPaint() {
     abcg::glViewport(0, 0, m_viewportSize.x, m_viewportSize.y);
 
@@ -213,7 +208,31 @@ void Window::setupModel(int sides,float radius, glm::vec4 red, glm::vec4 green,
     // End of binding to current VAO
     abcg::glBindVertexArray(0);
 }
-void Window::onPaintUI() {}
+void Window::onPaintUI() {
+    {
+    auto const widgetSize{ImVec2(80, 60)};
+    ImGui::SetNextWindowPos(ImVec2(m_viewportSize.x - widgetSize.x - 5,
+                                   m_viewportSize.y - widgetSize.y - 5));
+    ImGui::SetNextWindowSize(widgetSize);
+    auto windowFlags{ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar};
+    ImGui::Begin(" ", nullptr, windowFlags);
+
+    // Edit vertex colors
+    ImGui::PushItemWidth(100);
+
+        if (ImGui::Button("Pause/\nStart")) {
+            if( m_gameState == GameState::Stoped) { 
+                m_gameState = GameState::Running;
+            } else {
+                m_gameState = GameState::Stoped;
+                
+            }
+        }
+    ImGui::PopItemWidth();
+
+    ImGui::End();
+  }
+}
 
 void Window::onResize(glm::ivec2 const &size) {
     m_viewportSize = size;
